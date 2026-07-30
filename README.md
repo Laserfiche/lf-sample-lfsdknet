@@ -1,4 +1,4 @@
-# lf-sample-lfsdknet
+# Laserfiche SDK 12 Sample Projects
 
 The Laserfiche SDK ships with a set of sample programs written in C#
 and VB.NET which demonstrate the use of various facilities provided by
