@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+  <LF:importengine xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://laserfiche.com/namespaces/importengine ImportEngine.xsd"
+                   xmlns:LF="http://laserfiche.com/namespaces/importengine" version="1.0">
+    
+    <LF:toc on_document_conflict="unique" on_folder_conflict="unique">
+      <LF:document name="Presentation" template="Sample Template">
+        <LF:metadata>
+          <LF:field_values>
+            <LF:field_value name="Field1">Enter field1 data</LF:field_value>
+            <LF:field_value name="Field2">Enter field2 data</LF:field_value>
+            <LF:field_value name="Author">Roy G. Biv</LF:field_value>
+            <LF:field_value name="DateField">1999-04-25</LF:field_value>
+          </LF:field_values>
+        </LF:metadata>
+        <LF:electronic_document content_type="application/zip" extension="zip">
+          <LF:fileref ref="C:\Temp\sample1.zip" />
+        </LF:electronic_document>
+      </LF:document>
+      
+      <LF:document name="doc1" template="Sample Template">
+        <LF:metadata>
+          <LF:field_values>
+            <LF:field_value name="Field1">Enter field1 data</LF:field_value>
+            <LF:field_value name="Field2">Enter field2 data</LF:field_value>
+            <LF:field_value name="Author">Roy G. Biv</LF:field_value>
+            <LF:field_value name="DateField">1999-04-25</LF:field_value>
+          </LF:field_values>
+        </LF:metadata>
+        <LF:pages>
+          <LF:page ocr="false">
+            <LF:imagepart>
+              <LF:fileref ref="C:\sample1.tif" />
+            </LF:imagepart>
+          </LF:page>
+        </LF:pages>
+      </LF:document>
+
+      <LF:document name="doc2" template="Sample Template">
+        <LF:metadata>
+          <LF:field_values>
+            <LF:field_value name="Field1">Enter field1 data</LF:field_value>
+            <LF:field_value name="Field2">Enter field2 data</LF:field_value>
+            <LF:field_value name="Author">Roy G. Biv</LF:field_value>
+            <LF:field_value name="DateField">1999-04-25</LF:field_value>
+          </LF:field_values>
+        </LF:metadata>
+        <LF:pages>
+          <LF:page ocr="false">
+            <LF:imagepart>
+              <LF:fileref ref="C:\sample2.tif" />
+            </LF:imagepart>
+          </LF:page>
+        </LF:pages>
+      </LF:document>
+    </LF:toc>
+  
+</LF:importengine>

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+  <LF:importengine xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://laserfiche.com/namespaces/importengine ImportEngine.xsd"
+                   xmlns:LF="http://laserfiche.com/namespaces/importengine" version="1.0">
+   
+    <LF:toc on_document_conflict="unique" on_folder_conflict="unique">
+      <LF:document name="sample 2">
+        <LF:pages>
+          <LF:page ocr="false">
+            <LF:imagepart>
+              <LF:fileref ref="C:\image1.tif" />
+            </LF:imagepart>
+            <LF:textpart>
+              <LF:fileref ref="C:\text1.txt" />
+            </LF:textpart>
+          </LF:page>
+          <LF:page ocr="false">
+            <LF:imagepart>
+              <LF:fileref ref="C:\image2.tif" />
+            </LF:imagepart>
+            <LF:textpart>
+              <LF:fileref ref="C:\text2.txt" />
+            </LF:textpart>
+          </LF:page>
+          <LF:page ocr="false">
+            <LF:textpart>
+              <LF:fileref ref="C:\text3.txt" />
+            </LF:textpart>
+          </LF:page>
+        </LF:pages>
+      </LF:document>
+    </LF:toc>
+  
+</LF:importengine>

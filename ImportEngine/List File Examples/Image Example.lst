@@ -1,0 +1,9 @@
+LASERFICHE IMPORT LIST
+
+; This entire line is a comment.
+DOCUMENT(Sample 1)
+STARTLIST
+C:\image1.tif
+C:\image2.tif
+ENDLIST
+

@@ -1,0 +1,22 @@
+LASERFICHE IMPORT LIST
+
+STARTFIELDS
+Sample Template
+Enter field1 data
+Enter field2 data
+Roy G. Biv
+04/25/1999
+ENDFIELDS 
+
+ELECTRONIC(C:\sample1.zip, Presentation) 
+
+DOCUMENT(doc1)
+STARTLIST
+C:\sample1.tif
+ENDLIST 
+
+DOCUMENT(doc2)
+STARTLIST
+C:\sample2.tif
+ENDLIST
+

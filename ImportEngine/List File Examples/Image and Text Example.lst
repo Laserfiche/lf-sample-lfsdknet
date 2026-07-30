@@ -1,0 +1,9 @@
+LASERFICHE IMPORT LIST
+
+DOCUMENT(sample 2)
+STARTLIST
+C:\image1.tif,C:\text1.txt
+C:\image2.tif,C:\text2.txt
+,C:\text3.txt
+ENDLIST
+

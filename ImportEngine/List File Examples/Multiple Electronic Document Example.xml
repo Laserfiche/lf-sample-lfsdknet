@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+  <LF:importengine xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://laserfiche.com/namespaces/importengine ImportEngine.xsd"
+                   xmlns:LF="http://laserfiche.com/namespaces/importengine" version="1.0">
+    
+    <LF:toc on_document_conflict="unique" on_folder_conflict="unique">
+      <LF:document name="sample1.zip">
+        <LF:electronic_document content_type="application/zip" extension="zip">
+          <LF:fileref ref="C:\Temp\sample1.zip" />
+        </LF:electronic_document>
+      </LF:document>
+      <LF:document name="Transportation">
+        <LF:electronic_document content_type="application/msword" extension="doc">
+          <LF:fileref ref="D:\sample2.doc" />
+        </LF:electronic_document>
+      </LF:document>
+      <LF:document name="Logo">
+        <LF:electronic_document content_type="video/avi" extension="avi">
+          <LF:fileref ref="C:\sample3.avi" />
+        </LF:electronic_document>
+      </LF:document>
+    </LF:toc>
+  
+</LF:importengine>
