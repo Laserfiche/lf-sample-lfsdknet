@@ -1,0 +1,1753 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="ImportEngineSchema"
+           targetNamespace="http://laserfiche.com/namespaces/importengine"
+           elementFormDefault="qualified"
+           xmlns:lf="http://laserfiche.com/namespaces/importengine"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" >
+
+  <!-- Root element -->
+  <xs:element name="importengine">
+    <xs:annotation>
+      <xs:documentation>
+        This is the top-level container element for every ImportEngine file.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:ocrsettings" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="lf:fields" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="lf:templates" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="lf:linktypes" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="lf:stamps" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="lf:tags" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="lf:toc" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+
+      <xs:attribute name="version" use="required">
+        <xs:annotation>
+          <xs:documentation>The ImportEngine version to target.</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="1.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ocrsettings">
+    <xs:complexType>
+      <xs:attribute name="ocr" type="xs:boolean" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            Whether or not to OCR the image by default (text will be overwritten).
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="language" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            The lanuage used to OCR the images by default.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="decolumnize" type="xs:boolean" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            Whether whether to decolumnize the text by default
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="autoOrient" type="xs:boolean" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            Whether automatically determine the orientation of the image by default
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  
+  <!-- Collection of field definitions -->
+  <xs:element name="fields">
+    <xs:annotation>
+      <xs:documentation>A colleciton of field definitions.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:field" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:key name="field_key">
+      <xs:selector xpath="lf:field" />
+      <xs:field xpath="@name" />
+    </xs:key>
+  </xs:element>
+
+  <!-- Collection of template definitions -->
+  <xs:element name="templates">
+    <xs:annotation>
+      <xs:documentation>A colleciton of template definitions.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:template" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:key name="template_key">
+      <xs:selector xpath="lf:template" />
+      <xs:field xpath="@name" />
+    </xs:key>
+  </xs:element>
+
+  <!-- A single field definition -->
+  <xs:element name="field">
+    <xs:annotation>
+      <xs:documentation>The definition of a Laserfiche field.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="list" minOccurs="0" maxOccurs="1">
+          <xs:annotation>
+            <xs:documentation>
+              List of possible values. Only used for list fields.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="list_value" type="xs:string" maxOccurs="unbounded">
+                <xs:annotation>
+                  <xs:documentation>A single value for a list field.</xs:documentation>
+                </xs:annotation>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+
+      <xs:attribute name="name" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>The name of the field.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="type" type="lf:fieldType" use="required">
+        <xs:annotation>
+          <xs:documentation>The type of the field.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="length" type="xs:nonNegativeInteger" use="optional">
+        <xs:annotation>
+          <xs:documentation>
+            The maximum length of the field. Used for list and string fields.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="multivalued" type="xs:boolean" use="optional">
+        <xs:annotation>
+          <xs:documentation>Whether or not the field is a multi-valued field.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="required" type="xs:boolean" use="optional">
+        <xs:annotation>
+          <xs:documentation>Whether or not the field must have a value assigned to it.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="constraint" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>
+            The regular expression used to constrain what values may be assigned to the field.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="constraint_error" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>
+            The error message displayed when the field constraint is violated.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="description" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>The text description of the field.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <!--Default values-->
+      <xs:attribute name="default_string" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>The default value for a string field.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="default_number" type="xs:double" use="optional">
+        <xs:annotation>
+          <xs:documentation>The default value for a number field.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="default_datetime" type="xs:dateTime" use="optional">
+        <xs:annotation>
+          <xs:documentation>The default value for a datetime field.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="default_time" type="xs:time" use="optional">
+        <xs:annotation>
+          <xs:documentation>The default value for a time field.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="default_blob" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>The default value for a blob field.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="on_conflict" type="lf:conflictActionType" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            Specifies what action to take if a field of the same name already exists in the repository.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Template definition -->
+  <xs:element name="template">
+    <xs:annotation>
+      <xs:documentation>The definition of a Laserfiche template.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="fieldname" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+          <xs:annotation>
+            <xs:documentation>
+              The name of a field in the template.  May either be defined in the ImportEngine xml, or already exist on the server.
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:sequence>
+
+      <xs:attribute name="name" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>The name of the template.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="description" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>The text description of the template.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="on_conflict" type="lf:conflictActionType" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            Specifies what action to take if a template of the same name already exists in the repository.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- A collection of entry link definitions-->
+  <xs:element name="linktypes">
+    <xs:annotation>
+      <xs:documentation>
+        A collection of document relationship definitions.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:linktype" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:key name="linktype_key">
+      <xs:selector xpath="lf:linktype" />
+      <xs:field xpath="@relationship" />
+      <xs:field xpath="@reverse_relationship" />
+    </xs:key>
+  </xs:element>
+
+  <!-- Entry link definition -->
+  <xs:element name="linktype">
+    <xs:annotation>
+      <xs:documentation>
+        The definition of a Laserfiche document relationship.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="description" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>
+            The description of the document relationship.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="relationship" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            The name of the document relationship.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="reverse_relationship" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            The reverse of the document relationship.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Collection of stamp definitions -->
+  <xs:element name="stamps">
+    <xs:annotation>
+      <xs:documentation>
+        A collection of stamp definitions.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:stamp" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:key name="stamp_key">
+      <xs:selector xpath="lf:stamp" />
+      <xs:field xpath="@name" />
+    </xs:key>
+  </xs:element>
+
+  <!-- Stamp definiton -->
+  <xs:element name="stamp">
+    <xs:annotation>
+      <xs:documentation>
+        The definition of a Laserfiche stamp.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:annotation>
+          <xs:documentation>The stamp file.</xs:documentation>
+        </xs:annotation>
+        <xs:group ref="lf:FileRefGroup"/>
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>The name of the stamp.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="owner" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>
+            The name of the trustee that is the owner of the stamp.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Collection of tag definitions -->
+  <xs:element name="tags">
+    <xs:annotation>
+      <xs:documentation>A collection of tag definitions.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:tag" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:key name="tag_key">
+      <xs:selector xpath="lf:tag" />
+      <xs:field xpath="@name" />
+    </xs:key>
+  </xs:element>
+
+  <!-- Tag definition -->
+  <xs:element name="tag">
+    <xs:annotation>
+      <xs:documentation>The definition of a Laserfiche tag.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>The name of the tag.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="description" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>The description of the tag.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="is_secure" type="xs:boolean" use="required">
+        <xs:annotation>
+          <xs:documentation>Whether or not the tag is a security tag.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="watermark_text" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>
+            The watermark text for the tag.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="watermark_x_position" type="lf:wmXPosition" use="optional">
+        <xs:annotation>
+          <xs:documentation>The horizontal position of the tag watermark.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="watermark_y_position" type="lf:wmYPosition" use="optional">
+        <xs:annotation>
+          <xs:documentation>The vertical position of the tag watermark.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="watermark_angle" type="xs:int" use="optional">
+        <xs:annotation>
+          <xs:documentation>The angle at which to display the tag watermark.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="watermark_size" type="lf:wmSize" use="optional">
+        <xs:annotation>
+          <xs:documentation>The size of the tag watermark (as a percentage of the page).</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="watermark_required" type="xs:boolean" use="optional">
+        <xs:annotation>
+          <xs:documentation>Whether or not the tag watermark is required.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Root collection of entries -->
+  <xs:element name="toc">
+    <xs:annotation>
+      <xs:documentation>
+        This is the top-level container for entries (documents and folders)
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="lf:EntryGroup" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="on_folder_conflict" type="lf:folderConflictActionType" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            Describes what action to take if there already exists a folder with the same name at the same path in the repository.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="on_document_conflict" type="lf:documentConflictActionType" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            Describes what action to take if there already exists a document with the same name at the same path in the repository.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+    <xs:key name="entry_name_key">
+      <xs:selector xpath="lf:folder | lf:document | lf:shortcut" />
+      <xs:field xpath="@name" />
+    </xs:key>
+  </xs:element>
+
+  <!-- Group of valid entry elements -->
+  <xs:group name="EntryGroup">
+    <xs:choice>
+      <xs:element ref="lf:folder"/>
+      <xs:element ref="lf:document"/>
+      <xs:element ref="lf:shortcut"/>
+      <xs:element ref="lf:briefcase"/>
+    </xs:choice>
+  </xs:group>
+
+  <!-- Briefcase element -->
+  <xs:element name="briefcase">
+    <xs:annotation>
+      <xs:documentation>
+        Imports the specified Laserfiche briefcase into this location in the file tree.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="lf:FileRefGroup" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Shortcut definition -->
+  <xs:element name="shortcut">
+    <xs:annotation>
+      <xs:documentation>Defines a Laserfiche shortcut.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>The name of the shortcut.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="comment" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>The comment of the shortcut.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="linkto" type="xs:IDREF" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            References the ID of the entry that the shortcut points to.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Folder definition -->
+  <xs:element name="folder">
+    <xs:annotation>
+      <xs:documentation>Defines a Laserfiche folder.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:metadata" minOccurs="0"/>
+        <xs:element ref="lf:childentries" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="lf:EntryAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Document definition -->
+  <xs:element name="document">
+    <xs:annotation>
+      <xs:documentation>Defines a Laserfiche document.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:ocrsettings" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="lf:metadata" minOccurs="0"/>
+        <xs:element ref="lf:electronic_document" minOccurs="0"/>
+        <xs:element ref="lf:alt_electronic_documents" minOccurs="0"/>
+        <xs:element ref="lf:pages" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="lf:EntryAttributes"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="alt_electronic_documents">
+    <xs:annotation>
+      <xs:documentation>
+        A colleciton of alternate electronic documents in a Lasefiche document.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:alt_electronic_document" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:key name="alt_electronic_doc_key">
+      <xs:selector xpath="lf:alt_electronic_document" />
+      <xs:field xpath="@name" />
+    </xs:key>
+  </xs:element>
+
+  <!-- Collection of tags assigned to an entry -->
+  <xs:element name="entrytags">
+    <xs:annotation>
+      <xs:documentation>
+        A collection of tags assigned to the entry.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:entrytag" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Collection of field values assigned to the entry -->
+  <xs:element name="field_values">
+    <xs:annotation>
+      <xs:documentation>
+        A collection of field values assigned to an entry.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:field_value" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- A single property value-->
+  <xs:element name="field_value">
+    <xs:annotation>
+      <xs:documentation>
+        A single field value assigned to an entry.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+              <xs:documentation>The name of the field.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="position" type="xs:nonNegativeInteger" use="optional" default="0">
+            <xs:annotation>
+              <xs:documentation>The position of the value in a multi-valued field.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Reference to a tag-->
+  <xs:element name="entrytag">
+    <xs:annotation>
+      <xs:documentation>
+        Describes a tag assigned to an entry.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>The name of the assigned tag.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="description" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>A comment for this tag assignment.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Collection of child entries (for folders) -->
+  <xs:element name="childentries">
+    <xs:annotation>
+      <xs:documentation>A collection of entries contained with the folder.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="lf:EntryGroup" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+    <xs:key name="folder_entry_name_key">
+      <xs:selector xpath="lf:document | lf:shortcut | lf:folder" />
+      <xs:field xpath="@name" />
+    </xs:key>
+  </xs:element>
+
+  <xs:element name="metadata">
+    <xs:annotation>
+      <xs:documentation>Contains all of the metadata for an entry.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:all>
+        <xs:element ref="lf:entrytags" minOccurs="0"/>
+        <xs:element ref="lf:entrylinks" minOccurs="0"/>
+        <xs:element ref="lf:field_values" minOccurs="0"/>
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Collection of links assigned to an entry -->
+  <xs:element name="entrylinks">
+    <xs:annotation>
+      <xs:documentation>A collection of document relationships assigned to an entry.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:entrylink" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Definition of a link between two entries -->
+  <xs:element name="entrylink">
+    <xs:annotation>
+      <xs:documentation>
+        Describes a document relationship assigned to the entry
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="link_relationship" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>The relationship name.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="link_reverse_relationship" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>The reverse of the relationship</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="target" type="xs:IDREF" use="required">
+        <xs:annotation>
+          <xs:documentation>A reference to the target entry of the document relationship.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="notes" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>Notes about the relationship.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- The electronic document portion of a document-->
+  <xs:element name="electronic_document">
+    <xs:annotation>
+      <xs:documentation>
+        The electronic document portion of a Laserfiche document.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="lf:FileRefGroup"/>
+      </xs:sequence>
+      <xs:attribute name="content_type" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>The mimetype of the electronic document.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="extension" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>The file extension of the electronic document.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="last_modified" type="xs:dateTime" use="optional">
+        <xs:annotation>
+          <xs:documentation>The last-modified date of the electronic document.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="extract_text" type="xs:boolean" use="optional">
+        <xs:annotation>
+          <xs:documentation>Whether or not to extract text from electronic document.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- The alternate electronic document portion of a document-->
+  <xs:element name="alt_electronic_document">
+    <xs:annotation>
+      <xs:documentation>
+        An alternate electronic document in a Laserfiche document.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="lf:FileRefGroup"/>
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>The name of the alternate electronic document.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="content_type" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>The mimetype of the alternate electronic document.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Collection of pages in a document -->
+  <xs:element name="pages">
+    <xs:annotation>
+      <xs:documentation>A collection of document pages.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:filebase" minOccurs="0"/>
+        <xs:element ref="lf:page" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Definition of a single page -->
+  <xs:element name="page">
+    <xs:annotation>
+      <xs:documentation>
+        The definition of a Laserfiche document page.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:all>
+        <xs:element ref="lf:ocrsettings" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="lf:imagepart" minOccurs="0"/>
+        <xs:element ref="lf:textpart" minOccurs="0"/>
+        <xs:element ref="lf:locationpart" minOccurs="0"/>
+        <xs:element ref="lf:annotations" minOccurs="0"/>
+      </xs:all>
+      <xs:attribute name="language" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>The page language.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="ocr" type="xs:boolean" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            Whether or not to OCR the image (text will be overwritten).
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="ocrlanguage" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>
+            The lanuage used to OCR the image.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Group for referencing files (can be expanded to other types) -->
+  <xs:group name="FileRefGroup">
+    <xs:choice>
+      <xs:element ref="lf:fileref"/>
+    </xs:choice>
+  </xs:group>
+
+  <!-- A reference to a file on disk -->
+  <xs:element name="fileref">
+    <xs:annotation>
+      <xs:documentation>References a file on disk.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="ref" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>A path to a file.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Defines the root directory for files in a page -->
+  <xs:element name="filebase">
+    <xs:annotation>
+      <xs:documentation>Defines the root directory in which to find files in a page.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="ref" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>A path to a directory.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Defines the image part of a page -->
+  <xs:element name="imagepart">
+    <xs:annotation>
+      <xs:documentation>The definition of the image part of a document page.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="lf:FileRefGroup"/>
+      </xs:sequence>
+      <xs:attribute name="rotated" type="xs:boolean" use="optional" default="0">
+        <xs:annotation>
+          <xs:documentation>Whether or not the page is rotated.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="flipped" type="xs:boolean" use="optional" default="0">
+        <xs:annotation>
+          <xs:documentation>Whether or not the page is flipped.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="index" type="xs:integer" use="optional" default="0">
+        <xs:annotation>
+          <xs:documentation>The frame index of a multi-frame image.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>  
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Defines the text part of a page -->
+  <xs:element name="textpart">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>The definition of the text part of a document page.</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:group ref="lf:FileRefGroup"/>
+      </xs:sequence>
+      <xs:attribute name="encoding" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>The encoding of the text</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Defines the location part of a page -->
+  <xs:element name="locationpart">
+    <xs:complexType>
+      <xs:annotation>
+        <xs:documentation>The definition of the location part of a document page.</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+        <xs:group ref="lf:FileRefGroup"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element> 
+
+  <!-- Collection of annotations for a page -->
+  <xs:element name="annotations">
+    <xs:annotation>
+      <xs:documentation>The collection of annotations on a page.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="lf:AnnotationGroup" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- A text string -->
+  <xs:element name="text" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>A string of text.</xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+  <!-- A colleciton of recangles -->
+  <xs:element name="rects">
+    <xs:annotation>
+      <xs:documentation>A collection of rectangles.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:rect" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Rectangle definition -->
+  <xs:element name="rect">
+    <xs:annotation>
+      <xs:documentation>The definition of a rectangle.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="x1" type="xs:nonNegativeInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The horizontal position of the left side of the rectangle.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="x2" type="xs:nonNegativeInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The horizontal position of the right side of the rectangle.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="y1" type="xs:nonNegativeInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The vertical position of the top side of the rectangle.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="y2" type="xs:nonNegativeInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The vertical position of the bottom side of the rectangle.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Collection of points -->
+  <xs:element name="points">
+    <xs:annotation>
+      <xs:documentation>A collection of points.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:point" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Point definition -->
+  <xs:element name="point">
+    <xs:annotation>
+      <xs:documentation>
+        A point in two-dimensional coordinates.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attribute name="x" type="xs:nonNegativeInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            The position in the horizontal direction.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="y" type="xs:nonNegativeInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            The position in the vertical direction.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Attributes common to all entries -->
+  <xs:attributeGroup name="EntryAttributes">
+    <xs:attribute name="name" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>The name of the entry.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="comment" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          A comment about the entry.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="language" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation>The entry language.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="template" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation>The template assigned to the entry.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <!-- Id is only needed if the entry is going to be referenced -->
+    <xs:attribute name="id" type="xs:ID" use="optional">
+      <xs:annotation>
+        <xs:documentation>An identifier for referencing the entry for shortcuts and document relationships.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+
+  <xs:element name="highlight_annotation">
+    <xs:annotation>
+      <xs:documentation>The definition of a highlight annotation.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:rects" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="lf:AnnotationAttributes"/>
+      <xs:attribute name="color" type="lf:color" use="required">
+        <xs:annotation>
+          <xs:documentation>The color of the highlight.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="start_position" type="xs:nonNegativeInteger" use="optional">
+        <xs:annotation>
+          <xs:documentation>The position in the text at which the highlight begins.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="end_position" type="xs:nonNegativeInteger" use="optional">
+        <xs:annotation>
+          <xs:documentation>THe position in the text at which the highlight ends.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="redaction_annotation">
+    <xs:annotation>
+      <xs:documentation>The definition of a redaction annotation.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:rects" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="lf:AnnotationAttributes"/>
+      <xs:attribute name="color" use="required">
+        <xs:annotation>
+          <xs:documentation>
+            The color of the redaction.  May be either black (0) or white (16777215)
+          </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="lf:color">
+            <xs:enumeration value="0"/>
+            <xs:enumeration value="16777215"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="start_position" type="xs:nonNegativeInteger" use="optional">
+        <xs:annotation>
+          <xs:documentation>The position in the text at which the redaction begins.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="end_position" type="xs:nonNegativeInteger" use="optional">
+        <xs:annotation>
+          <xs:documentation>The position in the text at which the redaction ends.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="strikeout_annotation">
+    <xs:annotation>
+      <xs:documentation>The definition of a strikeout annotation</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:rects" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="lf:AnnotationAttributes"/>
+      <xs:attribute name="color" type="lf:color" use="required">
+        <xs:annotation>
+          <xs:documentation>The color of the strikeout.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="start_position" type="xs:nonNegativeInteger" use="optional">
+        <xs:annotation>
+          <xs:documentation>The position in the text at which the strikeout begins.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="end_position" type="xs:nonNegativeInteger" use="optional">
+        <xs:annotation>
+          <xs:documentation>The position in the text at which the strikeout ends.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="direction" type="lf:direction" use="optional">
+        <xs:annotation>
+          <xs:documentation>The direction of the strikeout.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="underline_annotation">
+    <xs:annotation>
+      <xs:documentation>
+        The definition of an underline annotation.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:rects" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="lf:AnnotationAttributes"/>
+      <xs:attribute name="color" type="lf:color" use="required">
+        <xs:annotation>
+          <xs:documentation>The color of the underline.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="start_position" type="xs:nonNegativeInteger" use="optional">
+        <xs:annotation>
+          <xs:documentation>The position in the text at which the underline begins.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="end_position" type="xs:nonNegativeInteger" use="optional">
+        <xs:annotation>
+          <xs:documentation>The position in the text at which the underline ends.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="direction" type="lf:direction" use="optional">
+        <xs:annotation>
+          <xs:documentation>The direction of the underline.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="stickynote_annotation">
+    <xs:annotation>
+      <xs:documentation>
+        The definition of an stickynote annotation.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:text" />
+      </xs:sequence>
+      <xs:attributeGroup ref="lf:AnnotationAttributes"/>
+      <xs:attribute name="color" type="lf:color" use="required">
+        <xs:annotation>
+          <xs:documentation>The color of the stickynote.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="x_position" type="xs:nonNegativeInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The horizontal position of the stickynote on the page.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="y_position" type="xs:nonNegativeInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The vertical position of the stickynote on the page.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="keep_history" type="xs:boolean" use="required">
+        <xs:annotation>
+          <xs:documentation>Whether or not to keep the history of the text.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="attachment_annotation">
+    <xs:annotation>
+      <xs:documentation>The definition of an attachment annotation</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="attach_file" minOccurs="1">
+          <xs:annotation>
+            <xs:documentation>The attached file.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lf:FileRefGroup"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="icon_file" minOccurs="0">
+          <xs:annotation>
+            <xs:documentation>The icon for the attached file.</xs:documentation>
+          </xs:annotation>
+          <xs:complexType>
+            <xs:sequence>
+              <xs:group ref="lf:FileRefGroup"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attributeGroup ref="lf:AnnotationAttributes"/>
+      <xs:attribute name="filename" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>The name of the attached file.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="mimetype" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>The mimetype of the attached file.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="x_position" type="xs:nonNegativeInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The horizontal position of the attachment on the page.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="y_position" type="xs:nonNegativeInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The vertical position of the attachment on the page.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="textbox_annotation">
+    <xs:annotation>
+      <xs:documentation>The definition of a textbox annotation.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:text"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="lf:AnnotationAttributes"/>
+      <xs:attributeGroup ref="lf:RectangularAnnotAttributes"/>
+      <xs:attribute name="opacity" type="lf:percent" use="required">
+        <xs:annotation>
+          <xs:documentation>The opacity of the annotation (0-100%).</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="text_size" type="xs:positiveInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The size of the text.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="direction" type="lf:direction" use="optional">
+        <xs:annotation>
+          <xs:documentation>The direction in which to draw the text.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="rectangle_annotation">
+    <xs:annotation>
+      <xs:documentation>The definition of a rectangle annotation.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="lf:AnnotationAttributes"/>
+      <xs:attributeGroup ref="lf:RectangularAnnotAttributes"/>
+      <xs:attribute name="rectangle_style" type="lf:rectangleStyle" use="required">
+        <xs:annotation>
+          <xs:documentation>The type of rectangle annotation.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="opacity" type="lf:percent" use="required">
+        <xs:annotation>
+          <xs:documentation>The opacity of the annotation (0-100%).</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="callout_annotation">
+    <xs:annotation>
+      <xs:documentation>The definition of a callout annotation.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:text"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="lf:AnnotationAttributes"/>
+      <xs:attributeGroup ref="lf:RectangularAnnotAttributes"/>
+      <xs:attribute name="focus_x_position" type="xs:nonNegativeInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The horizontal position of the callout focus.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="focus_y_position" type="xs:nonNegativeInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The vertical position of the callout focus.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="end_style" type="lf:endingStyle" use="required">
+        <xs:annotation>
+          <xs:documentation>The style of the end of the callout arrow.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="opacity" type="lf:percent" use="required">
+        <xs:annotation>
+          <xs:documentation>The opacity of the annotation (0-100%).</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="text_size" type="xs:positiveInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The size of the text.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="direction" type="lf:direction" use="optional">
+        <xs:annotation>
+          <xs:documentation>The direction in which to draw the text.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="stamp_annotation">
+    <xs:annotation>
+      <xs:documentation>The definition of a stamp annotation.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="lf:FileRefGroup" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="lf:AnnotationAttributes"/>
+      <xs:attributeGroup ref="lf:RectangleBounds"/>
+      <xs:attribute name="color" type="lf:color" use="required">
+        <xs:annotation>
+          <xs:documentation>The color of the stamp.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="opacity" type="lf:percent" use="required">
+        <xs:annotation>
+          <xs:documentation>The opacity of the annotation (0-100%).</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="angle" type="xs:short" use="optional">
+        <xs:annotation>
+          <xs:documentation>The angle by which to rotate the stamp clockwise.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="stamp_name" type="xs:string" use="optional">
+        <xs:annotation>
+          <xs:documentation>The name of a previously-defined stamp to use.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="bitmap_annotation">
+    <xs:annotation>
+      <xs:documentation>The definition of a bitmap annotation.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group ref="lf:FileRefGroup"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="lf:AnnotationAttributes"/>
+      <xs:attributeGroup ref="lf:RectangleBounds"/>
+      <xs:attribute name="opacity" type="lf:percent" use="required">
+        <xs:annotation>
+          <xs:documentation>The opacity of the annotation (0-100%).</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="angle" type="xs:short" use="optional">
+        <xs:annotation>
+          <xs:documentation>The angle by which to rotate the image clockwise.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="line_annotation">
+    <xs:annotation>
+      <xs:documentation>The definition of a line annotation.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:attributeGroup ref="lf:AnnotationAttributes"/>
+      <xs:attribute name="start_x_position" type="xs:positiveInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The horizontal position of the line start.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="start_y_position" type="xs:positiveInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The vertical position of the line start.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="end_x_position" type="xs:positiveInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The horizontal position of the line end.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="end_y_position" type="xs:positiveInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The vertical position of the line end.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="fill_color" type="lf:color" use="required">
+        <xs:annotation>
+          <xs:documentation>The color with which to fill the ends.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="line_color" type="lf:color" use="required">
+        <xs:annotation>
+          <xs:documentation>The color of the line.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="line_style" type="lf:lineStyle" use="required">
+        <xs:annotation>
+          <xs:documentation>The style in which to draw the line.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="start_style" type="lf:endingStyle" use="required">
+        <xs:annotation>
+          <xs:documentation>The pointer style for the start of the line.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="end_style" type="lf:endingStyle" use="required">
+        <xs:annotation>
+          <xs:documentation>The pointer style for the end of the line.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="line_thickness" type="xs:positiveInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The thickness of the line.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="opacity" type="lf:percent" use="required">
+        <xs:annotation>
+          <xs:documentation>The opacity of the annotation (0-100%).</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="freehand_annotation">
+    <xs:annotation>
+      <xs:documentation>The definition of a freehand annotation.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:points"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="lf:AnnotationAttributes"/>
+      <xs:attribute name="color" type="lf:color" use="required">
+        <xs:annotation>
+          <xs:documentation>The color of the freehand annotation.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="thickness" type="xs:positiveInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The thickness of the line.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="opacity" type="lf:percent" use="required">
+        <xs:annotation>
+          <xs:documentation>The opacity of the annotation (0-100%).</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="polyline_annotation">
+    <xs:annotation>
+      <xs:documentation>The definition of a polyline annotation.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="lf:points"/>
+      </xs:sequence>
+      <xs:attributeGroup ref="lf:AnnotationAttributes"/>
+      <xs:attribute name="color" type="lf:color" use="required">
+        <xs:annotation>
+          <xs:documentation>The color of the polyline annotation.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="style" type="lf:lineStyle" use="required">
+        <xs:annotation>
+          <xs:documentation>The style in which to draw the polyline.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="thickness" type="xs:positiveInteger" use="required">
+        <xs:annotation>
+          <xs:documentation>The thickness of the line.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="opacity" type="lf:percent" use="required">
+        <xs:annotation>
+          <xs:documentation>The opacity of the annotation (0-100%).</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- Attributes common to all annotations -->
+  <xs:attributeGroup name="AnnotationAttributes">
+    <xs:attribute name="protected" type="xs:boolean" use="optional">
+      <xs:annotation>
+        <xs:documentation>Whether or not the annotation is protected.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="private" type="xs:boolean" use="optional">
+      <xs:annotation>
+        <xs:documentation>Whether or not the annotation is private.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="comment" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation>A comment about the annotation.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+
+  <!-- Common attributes for rectangle annotations (rectangles, callouts, textboxes) -->
+  <xs:attributeGroup name="RectangularAnnotAttributes">
+    <xs:annotation>
+      <xs:documentation>
+        Attributes common to rectangle annotations (rectangles, callouts, and textboxes)
+      </xs:documentation>
+    </xs:annotation>
+    <xs:attributeGroup ref="lf:RectangleBounds"/>
+    <xs:attribute name="fill_color" type="lf:color" use="required">
+      <xs:annotation>
+        <xs:documentation>The color to fill the rectangle.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="line_color" type="lf:color" use="required">
+      <xs:annotation>
+        <xs:documentation>The color of the rectangle borders.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="line_style" type="lf:lineStyle" use="required">
+      <xs:annotation>
+        <xs:documentation>The line style of the rectangle borders.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="line_thickness" type="xs:positiveInteger" use="required">
+      <xs:annotation>
+        <xs:documentation>The thickness of the borders.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="RectangleBounds">
+    <xs:attribute name="left" type="xs:nonNegativeInteger" use="required">
+      <xs:annotation>
+        <xs:documentation>The horizontal position of the left side of the rectangle.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="top" type="xs:nonNegativeInteger" use="required">
+      <xs:annotation>
+        <xs:documentation>The vertical position of the top side of the rectangle.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="right" type="xs:nonNegativeInteger" use="required">
+      <xs:annotation>
+        <xs:documentation>The horizontal position of the right side of the rectangle.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="bottom" type="xs:nonNegativeInteger" use="required">
+      <xs:annotation>
+        <xs:documentation>The vertical position of the bottom side of the rectangle.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:attributeGroup>
+
+  <!-- Possible annotation types -->
+  <xs:group name="AnnotationGroup">
+    <xs:choice>
+      <xs:element ref="lf:highlight_annotation"/>
+      <xs:element ref="lf:redaction_annotation"/>
+      <xs:element ref="lf:strikeout_annotation"/>
+      <xs:element ref="lf:underline_annotation"/>
+      <xs:element ref="lf:stickynote_annotation"/>
+      <xs:element ref="lf:attachment_annotation"/>
+      <xs:element ref="lf:textbox_annotation"/>
+      <xs:element ref="lf:bitmap_annotation"/>
+      <xs:element ref="lf:line_annotation"/>
+      <xs:element ref="lf:rectangle_annotation"/>
+      <xs:element ref="lf:polyline_annotation"/>
+      <xs:element ref="lf:freehand_annotation"/>
+      <xs:element ref="lf:callout_annotation"/>
+      <xs:element ref="lf:stamp_annotation"/>
+    </xs:choice>
+  </xs:group>
+
+  <xs:simpleType name="lineStyle">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="solid"/>
+      <xs:enumeration value="dashed1"/>
+      <xs:enumeration value="dashed2"/>
+      <xs:enumeration value="dashed3"/>
+      <xs:enumeration value="dashed4"/>
+      <xs:enumeration value="dashed5"/>
+      <xs:enumeration value="dashed6"/>
+      <xs:enumeration value="cloud1"/>
+      <xs:enumeration value="cloud2"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="rectangleStyle">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="rectangle"/>
+      <xs:enumeration value="ellipse"/>
+      <xs:enumeration value="rounded_rectangle"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="direction">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="left_to_right"/>
+      <xs:enumeration value="top_to_bottom"/>
+      <xs:enumeration value="right_to_left"/>
+      <xs:enumeration value="bottom_to_top"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="wmXPosition">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="left"/>
+      <xs:enumeration value="center"/>
+      <xs:enumeration value="right"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="wmYPosition">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="top"/>
+      <xs:enumeration value="center"/>
+      <xs:enumeration value="bottom"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="wmSize">
+    <xs:restriction base="xs:positiveInteger">
+      <xs:maxInclusive value="95"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="percent">
+    <xs:restriction base="xs:nonNegativeInteger">
+      <xs:maxInclusive value="100"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="color">
+    <xs:restriction base="xs:int"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="endingStyle">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="none"/>
+      <xs:enumeration value="open"/>
+      <xs:enumeration value="closed"/>
+      <xs:enumeration value="open_reversed"/>
+      <xs:enumeration value="closed_reversed"/>
+      <xs:enumeration value="butt"/>
+      <xs:enumeration value="diamond"/>
+      <xs:enumeration value="round"/>
+      <xs:enumeration value="square"/>
+      <xs:enumeration value="slash"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="fieldType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="string"/>
+      <xs:enumeration value="date"/>
+      <xs:enumeration value="datetime"/>
+      <xs:enumeration value="time"/>
+      <xs:enumeration value="number"/>
+      <xs:enumeration value="blob"/>
+      <xs:enumeration value="list"/>
+      <xs:enumeration value="short"/>
+      <xs:enumeration value="long"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="conflictActionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="rename">
+        <xs:annotation>
+          <xs:documentation>Automatically rename the imported object to avoid name conflicts.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="merge">
+        <xs:annotation>
+          <xs:documentation>Merge the imported object with existing objects of the same name.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="ignore">
+        <xs:annotation>
+          <xs:documentation>Do not import the new object on a name conflict.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="folderConflictActionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="unique">
+        <xs:annotation>
+          <xs:documentation>Automatically rename the folder.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="merge">
+        <xs:annotation>
+          <xs:documentation>Automatically merge with existing folders.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="fail">
+        <xs:annotation>
+          <xs:documentation>Abort import on conflict.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="documentConflictActionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="unique">
+        <xs:annotation>
+          <xs:documentation>Automatically rename the document.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="overwrite">
+        <xs:annotation>
+          <xs:documentation>Overwrite the exsiting document.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="skip">
+        <xs:annotation>
+          <xs:documentation>Skip importing the document, leaving only the document already in the repository.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="fail">
+        <xs:annotation>
+          <xs:documentation>Abort import on conflict.</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
